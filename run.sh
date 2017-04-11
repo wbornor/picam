@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e -x
 
 TARGET=s3://picam-private/
 DATE=$(date +"%Y-%m-%d_%H%M")
@@ -19,14 +20,14 @@ if [ $? -ne 0 ]; then
   sudo apt-get install fswebcam
 fi
 
-if [ -z /tmp/picam ]; then
+if [ ! -d /tmp/picam ]; then
   mkdir /tmp/picam
 fi 
 
 IMGFILE=/tmp/picam/picam.$DATE.jpg
 
 fswebcam -r 1290x720 --no-banner $IMGFILE
-if [ -z $IMGFILE ]; then
+if [ -e $IMGFILE ]; then
   aws s3 cp $IMGFILE $TARGET
   rm $IMGFILE
 fi
