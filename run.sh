@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e -x
+set -x
 
 TARGET=s3://picam-private/
 DATE=$(date +"%Y-%m-%d_%H%M")
@@ -9,8 +9,7 @@ if [ $? -ne 0 ]; then
   sudo apt-get install python-pip -y
 fi
 
-which aws
-if [ $? -ne 0 ]; then 
+if [ ! -e /usr/local/bin/aws ]; then 
   pip install --user boto
   sudo pip install awscli
 fi
@@ -28,7 +27,7 @@ IMGFILE=/tmp/picam/picam.$DATE.jpg
 
 fswebcam -r 1290x720 --no-banner $IMGFILE
 if [ -e $IMGFILE ]; then
-  aws s3 cp $IMGFILE $TARGET
+  /usr/local/bin/aws s3 cp $IMGFILE $TARGET
   rm $IMGFILE
 fi
 
